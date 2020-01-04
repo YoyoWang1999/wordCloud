@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/echarts.js"></script>
+    <script src="js/worldcloud.js"></script>
+</head>
+<body>
+    <div id="main" style="width:800px;height:700px;"></div>
+
+    <script>
+    $(function(){
+        echartsCloud();//初始化echarts图
+    })
+    
+function echartsCloud(){
+    // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var maskImage = new Image();
+        maskImage.src = 'cd.png';
+    myChart.setOption({
+        title: {
+            text: 'echarts3云图展示'
+        },
+        tooltip: {},
+        series: [ {
+                    type: 'wordCloud',
+                    sizeRange: [12, 55],
+                    rotationRange: [0, 90],  //设置为不旋转                
+                    gridSize: 2,            //字符之间的间隔
+                    shape: 'pentagon',
+                    maskImage: maskImage,  //自定义图案
+                    drawOutOfBound: false,
+                    textStyle: {
+                    		//正常情况下的样式
+                    		normal: {
+                        		color: function() {
+                                        return 'rgb(' +
+                                            Math.round(Math.random() * 255) +
+                                            ', ' + Math.round(Math.random() * 255) +
+                                            ', ' + Math.round(Math.random() * 255) + ')'
+                                    }   	
+                    	 	},
+                    	 	//鼠标悬浮时的样式
+                        	emphasis: {                       	
+                        		fontWeight:'bolder', 
+                        		fontSize:30,
+                            	color: '#00467A'
+                        	}
+                    },
+                    data:[]  //data是通过ajax取的，这里先空着，取完之后再重新渲染
+
+                }],
+
+    });
+
+    // 异步加载数据
+    $.get('./cloud.json').done(function (data) {
+        // 填入数据
+        myChart.setOption({
+            series: [{
+                data: data.dataCloud
+            }]
+        });
+    });
+    
+    
+    //图表自适应
+    window.onresize = function () {
+                myChart.resize();
+    }
+}  
+
+    </script>
+</body>
+</html>
